@@ -15,26 +15,26 @@
         
         <div id="layoutSidenav_content">
             <div class="row">
-                <h3>Pengguna</h3>
+                <h3>Lokasi</h3>
                 <div class="card">
                     <div class="card-header">
                         <div class="card-title mt-2">
                             <div class="row">
                                 <div class="col-7">
-                                    <span class="title">Daftar Pengguna</span>
+                                    <span class="title">Daftar Lokasi</span>
                                 </div>
                                 <div class="col-3">
                                     <form method="POST">
                                         <div class="input-group">
-                                            <input type="search" id="nama_pengguna" name= "nama_pengguna" class="form-control" placeholder="Cari Nama Pengguna" autocomplete="off"/>
-                                            <button name="cariNamaPengguna" class="btn btn-success" type="submit">
+                                            <input type="search" id="nama_lokasi" name= "nama_lokasi" class="form-control" placeholder="Cari Lokasi" autocomplete="off"/>
+                                            <button name="cariNamaLokasi" class="btn btn-success" type="submit">
                                                 <i class="fas fa-search"></i>
                                             </button> 
                                         </div>
                                     </form>
                                 </div>
                                 <div class="col-2">
-                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahPengguna">Tambah Pengguna</button>
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#tambahLokasi">Tambah Lokasi</button>
                                 </div>
                             </div>
                         </div>
@@ -50,13 +50,13 @@
                                 <div class='alert alert-success alert-dismissible fade show' role='alert'>
                                     <i class='fa-solid fa-circle-check mr-2'></i>";
                                     if($_REQUEST['status']==1){
-                                        echo "Data Pengguna Berhasil Ditambahkan.";
+                                        echo "Data Lokasi Berhasil Ditambahkan.";
                                     }
                                     elseif($_REQUEST['status']==2){
-                                        echo "Data Pengguna Berhasil Diedit.";
+                                        echo "Data Lokasi Berhasil Diedit.";
                                     }
                                     else{
-                                        echo "Data Pengguna Berhasil Dihapus";
+                                        echo "Data Lokasi Berhasil Dihapus";
                                     }
                                     echo "<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                                 </div>";
@@ -74,40 +74,36 @@
                             <thead class="bg-dark text-white">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Nama Depan</th>
-                                    <th>Nama Belakang</th>
-                                    <th>Email</th>
-                                    <th>No. Telepon</th>
-                                    <th>Password</th>
+                                    <th>Nama Lokasi</th>
+                                    <th>Tipe</th>
+                                    <th>Tarif / jam</th>
                                     <th class="text-center">Opsi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php 
-                                $nama_pengguna = empty($_REQUEST['nama_pengguna']) ? "" : $_REQUEST['nama_pengguna'];
-                                $selectPengguna = mysqli_query($conn, "SELECT * FROM pengguna WHERE CONCAT(nama_depan, ' ', nama_belakang) LIKE '%$nama_pengguna%'");
-                                while($row = mysqli_fetch_assoc($selectPengguna)){
+                                $nama_lokasi = empty($_REQUEST['nama_lokasi']) ? "" : $_REQUEST['nama_lokasi'];
+                                $selectLokasi = mysqli_query($conn, "SELECT * FROM lokasi WHERE nama_lokasi LIKE '%$nama_lokasi%'");
+                                while($row = mysqli_fetch_assoc($selectLokasi)){
                                 ?>
                                 <tr>
-                                    <td><?= $row['id_pengguna'];?></td>
-                                    <td><?= $row['nama_depan'];?></td>
-                                    <td><?= $row['nama_belakang'];?></td>
-                                    <td><?= $row['email'];?></td>
-                                    <td><?= $row['no_telp'];?></td>
-                                    <td><?= $row['password'];?></td>
+                                    <td><?= $row['id_lokasi'];?></td>
+                                    <td><?= $row['nama_lokasi'];?></td>
+                                    <td><?= ucwords($row['tipe']);?></td>
+                                    <td><?= "Rp " . number_format($row['tarif'], 2, ",", ".");?></td>
                                     <td class="text-center opsi">
                                         <!-- detail -->
-                                        <!-- <button type="button" class="btn btn-primary">
-                                            <i class="far fa-file-alt fa-lg"></i>
-                                        </button> -->
+                                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#detailLokasi<?= $row['id_lokasi'];?>">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </button>
 
                                         <!-- edit -->
-                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editPengguna<?= $row['id_pengguna'];?>">
+                                        <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editLokasi<?= $row['id_lokasi'];?>">
                                             <i class="fa-regular fa-pen-to-square fa-lg" style="color: #fff"></i>
                                         </button>
 
                                         <!-- hapus -->
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#hapusPengguna<?= $row['id_pengguna'];?>">
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#hapusLokasi<?= $row['id_lokasi'];?>">
                                             <i class="far fa-trash-alt fa-lg"></i>
                                         </button>
                                     </td>
@@ -123,49 +119,40 @@
         </div>
     </div>
 
-    <!-- modal tambah pengguna -->
-    <div class="modal fade" id="tambahPengguna" aria-labelledby="tambahPengguna" aria-hidden="true">
+    <!-- modal tambah lokasi -->
+    <div class="modal fade" id="tambahLokasi" aria-labelledby="tambahLokasi" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form method="POST">
                     <div class="modal-header bg-success text-white">
-                        <h4 class="modal-title">Tambah Pengguna</h4>
+                        <h4 class="modal-title">Tambah Lokasi</h4>
                         <button type="reset" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 row">
-                            <label for="nama_depan" class="col-sm-4 col-form-label">Nama Depan</label>
+                            <label for="nama_lokasi" class="col-sm-4 col-form-label">Nama Lokasi</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_depan" autocomplete="off" required>
+                                <input type="text" class="form-control" name="nama_lokasi" autocomplete="off" required>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_belakang" class="col-sm-4 col-form-label">Nama Belakang</label>
+                            <label for="tipe" class="col-sm-4 col-form-label">Tipe</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_belakang" autocomplete="off" required>
+                                <select class="form-select" name="tipe" required>
+                                    <option selected value="gedung">Gedung</option>
+                                    <option value="jalanan">Jalanan</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="email" class="col-sm-4 col-form-label">Email</label>
+                            <label for="tarif" class="col-sm-4 col-form-label">Tarif</label>
                             <div class="col-sm-8">
-                                <input type="email" class="form-control" name="email"autocomplete="off" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="no_telp" class="col-sm-4 col-form-label">No. Telepon</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="no_telp" autocomplete="off" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="password" class="col-sm-4 col-form-label">Password</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="password" autocomplete="off" required>
+                                <input type="number" class="form-control" name="tarif" min="1000" max="10000" step="1000" autocomplete="off" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" name="tambahPengguna" value="tambahPengguna">Tambah</button>
+                        <button type="submit" class="btn btn-success" name="tambahLokasi" value="tambahLokasi">Tambah</button>
                         <button type="reset" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                     </div>
                 </form>
@@ -173,60 +160,60 @@
         </div>
     </div>
 
-    <!-- nyari id pengguna yg ingin diedit / dihapus-->
+    <!-- nyari id lokasi yg ingin diedit / dihapus-->
     <?php
-    $selectPengguna = mysqli_query($conn, "SELECT * FROM pengguna");
-    while($row=mysqli_fetch_assoc($selectPengguna)){
+    $selectLokasi = mysqli_query($conn, "SELECT * FROM lokasi");
+    while($row=mysqli_fetch_assoc($selectLokasi)){
     ?>
-    <!-- modal edit pengguna -->
-    <div class="modal fade" id="editPengguna<?= $row['id_pengguna'];?>" aria-labelledby="editPengguna" aria-hidden="true">
+    <!-- modal edit lokasi -->
+    <div class="modal fade" id="editLokasi<?= $row['id_lokasi'];?>" aria-labelledby="editLokasi" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form method="POST">
                     <div class="modal-header bg-warning text-white">
-                        <h4 class="modal-title">Edit Pengguna</h4>
+                        <h4 class="modal-title">Edit Lokasi</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 row">
-                            <label for="id_pengguna" class="col-sm-4 col-form-label">ID</label>
+                            <label for="id_lokasi" class="col-sm-4 col-form-label">ID</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="id_pengguna" value="<?= $row['id_pengguna'];?>" readonly>
+                                <input type="text" class="form-control" name="id_lokasi" value="<?= $row['id_lokasi'];?>" readonly>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_depan" class="col-sm-4 col-form-label">Nama Depan</label>
+                            <label for="nama_lokasi" class="col-sm-4 col-form-label">Nama Lokasi</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_depan" value="<?= $row['nama_depan'];?>" autocomplete="off" required>
+                                <input type="text" class="form-control" name="nama_lokasi" value="<?= $row['nama_lokasi'];?>" autocomplete="off" required>
+                            </div>
+                        </div> 
+                        <div class="mb-3 row">
+                            <label for="tipe" class="col-sm-4 col-form-label">Tipe</label>
+                            <div class="col-sm-8">
+                                <select class="form-select" name="tipe" required>
+                                    <?php 
+                                    if($row['tipe'] == 'gedung'){
+                                        echo "<option selected value='gedung'>Gedung</option>
+                                        <option value='jalanan'>Jalanan</option>";
+                                    }
+                                    else{
+                                        echo "<option value='gedung'>Gedung</option>
+                                        <option selected value='jalanan'>Jalanan</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_belakang" class="col-sm-4 col-form-label">Nama Belakang</label>
+                            <label for="tarif" class="col-sm-4 col-form-label">Tarif</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_belakang" value="<?= $row['nama_belakang'];?>" autocomplete="off" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="email" class="col-sm-4 col-form-label">Email</label>
-                            <div class="col-sm-8">
-                                <input type="email" class="form-control" name="email" value="<?= $row['email'];?>" autocomplete="off" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="no_telp" class="col-sm-4 col-form-label">No. Telepon</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="no_telp" value="<?= $row['no_telp'];?>" autocomplete="off" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="password" class="col-sm-4 col-form-label">Password</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="password" value="<?= $row['password'];?>" autocomplete="off" required>
+                                <input type="number" class="form-control" name="tarif" value="<?= $row['tarif'];?>"
+                                min="1000" max="10000" step="1000" autocomplete="off" required>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-success" name="editPengguna" value="editPengguna">Edit</button>
+                        <button type="submit" class="btn btn-success" name="editLokasi" value="editLokasi">Edit</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                     </div>
                 </form>
@@ -234,56 +221,44 @@
         </div>
     </div>
 
-    <!-- modal hapus pengguna -->
-    <div class="modal fade" id="hapusPengguna<?= $row['id_pengguna'];?>" aria-labelledby="hapusPengguna" aria-hidden="true">
+    <!-- modal hapus lokasi -->
+    <div class="modal fade" id="hapusLokasi<?= $row['id_lokasi'];?>" aria-labelledby="hapusLokasi" aria-hidden="true">
          <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <form method="POST">
                     <div class="modal-header bg-danger text-white">
-                        <h4 class="modal-title">Hapus Pengguna</h4>
+                        <h4 class="modal-title">Hapus Lokasi</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3 row">
-                            <label for="id_pengguna" class="col-sm-4 col-form-label">ID</label>
+                            <label for="id_lokasi" class="col-sm-4 col-form-label">ID</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="id_pengguna" value="<?= $row['id_pengguna'];?>" readonly>
+                                <input type="text" class="form-control" name="id_lokasi" value="<?= $row['id_lokasi'];?>" readonly>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_depan" class="col-sm-4 col-form-label">Nama Depan</label>
+                            <label for="nama_lokasi" class="col-sm-4 col-form-label">Nama Lokasi</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_depan" value="<?= $row['nama_depan'];?>" readonly>
+                                <input type="text" class="form-control" name="nama_lokasi" value="<?= $row['nama_lokasi'];?>" readonly>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="nama_belakang" class="col-sm-4 col-form-label">Nama Belakang</label>
+                            <label for="tipe" class="col-sm-4 col-form-label">Tipe</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control" name="nama_belakang" value="<?= $row['nama_belakang'];?>" readonly>
+                                <input type="text" class="form-control" name="tipe" value="<?= $row['tipe'];?>" readonly>
                             </div>
                         </div>
                         <div class="mb-3 row">
-                            <label for="email" class="col-sm-4 col-form-label">Email</label>
+                            <label for="tarif" class="col-sm-4 col-form-label">Tarif</label>
                             <div class="col-sm-8">
-                                <input type="email" class="form-control" name="email" value="<?= $row['email'];?>" readonly>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="no_telp" class="col-sm-4 col-form-label">No. Telepon</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="no_telp" value="<?= $row['no_telp'];?>" readonly>
-                            </div>
-                        </div>
-                        <div class="mb-3 row">
-                            <label for="password" class="col-sm-4 col-form-label">Password</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control" name="password" value="<?= $row['password'];?>" readonly>
+                                <input type="number" class="form-control" name="tarif" value="<?= $row['tarif'];?>" readonly>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <h6 class="mx-5 my-3 pr-3">Anda yakin ingin menghapus data pengguna ini?</h6>
-                        <button type="submit" class="btn btn-success" name="hapusPengguna" value="hapusPengguna">Hapus</button>
+                        <h6 class="mx-5 my-3 pr-3">Anda yakin ingin menghapus <?= $row['nama_lokasi'];?> dari daftar lokasi?</h6>
+                        <button type="submit" class="btn btn-success" name="hapusLokasi" value="hapusLokasi">Hapus</button>
                         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                     </div>
                 </form>
